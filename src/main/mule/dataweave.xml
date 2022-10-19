@@ -36,7 +36,7 @@ attributes.method]]></ee:set-variable>
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-"I love sindhu"]]></ee:set-payload>
+"I love chintu"]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>

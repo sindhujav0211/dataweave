@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f10124d4-084c-4a4a-87a5-75009b572550" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="dataweaveFlow" doc:id="52fbb6d5-72bb-4fe9-93af-a84f760cd4c0" >
+		<http:listener doc:name="Listener" doc:id="80471823-242d-4c31-ac83-f3351df8614b" config-ref="HTTP_Listener_config" path="/dw-test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5f703bf7-8980-4909-94b7-fb9d308e104d" message="process-started"/>
+		<ee:transform doc:name="Transform Message" doc:id="44a52087-9faa-4d88-b40c-f552610d0cad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+
+output application/json
+---
+
+{"hello " : [payload.PersonID , attributes.method]}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="method" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.method]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3b9a0bf6-e799-4ac2-adc4-c9234f179cc1" message="#[vars.method]"/>
+	</flow>
+	<flow name="dataweaveFlow-functions" doc:id="6c114c39-973a-4e90-9de1-cec5b6f76b31" >
+		<ee:transform doc:name="map(array)" doc:id="0fb4d79e-8854-4ccb-b931-c8e3dcd038da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var a= [{
+    "name": "sindhu",
+    "id": "1"
+},
+{
+    "name": "chintu",
+    "id": "2"
+},
+{
+    "name": "vijju",
+    "id": "3"
+}
+]
+
+output application/json
+---
+
+a map ((item, index) -> {
+    "person": upper(item.name),      //use upper function to make the letters uppercase.
+    "row": index,
+    "acc": item.id,
+    "concatinate": item.name ++ "-" ++ index ++ "-" ++ item.id,
+    "time": now() as Time
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="reduce" doc:id="3e6c1128-f4b5-4351-8f12-45acdc51f5d3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var a= [{
+    "name": "sindhu",
+    "id": "1"
+},
+{
+    "name": "chintu",
+    "id": "2"
+},
+{
+    "name": "vijju",
+    "id": "3"
+}
+]
+output application/json
+---
+a reduce ($ ++ $$)
+
+
+//converts an array of objects(i/p) into single object(o/p)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="pluck" doc:id="abb95238-154e-4749-830d-36f5a75b49ca" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var a= {
+    "name": "sindhu",
+    "id": "1"
+}
+
+
+output application/json
+---
+a pluck(value, key, index)-> {
+	"what is value": value,
+	//"what is key": key,
+	"what is index": index
+}
+
+
+//returns output in array of objects]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="combining variables" doc:id="03fda31a-3c73-4475-a1d0-64b7ac7da776" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var a= [{
+    "name": "sindhu",
+    "id": "1"
+},
+{
+    "name": "chintu",
+    "id": "2"
+},
+{
+    "name": "vijju",
+    "id": "3"
+}
+]
+var b = [{
+    "name": "bsindhu",
+    "id": "1"
+},
+{
+    "name": "bchintu",
+    "id": "2"
+},
+{
+    "name": "bvijju",
+    "id": "3"
+}
+]
+output application/json
+---
+a+b]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="flatten" doc:id="5f3d5f55-a023-4fb5-a54e-3ffab71cb3ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var a= [{
+    "name": "sindhu",
+    "id": "1"
+},
+{
+    "name": "chintu",
+    "id": "2"
+},
+{
+    "name": "vijju",
+    "id": "3"
+}
+]
+var b = [{
+    "name": "bsindhu",
+    "id": "1"
+},
+{
+    "name": "bchintu",
+    "id": "2"
+},
+{
+    "name": "bvijju",
+    "id": "3"
+}
+]
+output application/json
+---
+//flatten(a+b)  //gives the values in the form of array of objects
+
+flatten(a+b).name ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="flatten,map,upper combination" doc:id="1d34fe0e-a39e-461f-871b-730f54f6b5b5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var a= [{
+    "name": "sindhu",
+    "id": "1"
+},
+{
+    "name": "chintu",
+    "id": "2"
+},
+{
+    "name": "vijju",
+    "id": "3"
+}
+]
+var b = [{
+    "name": "bsindhu",
+    "id": "1"
+},
+{
+    "name": "bchintu",
+    "id": "2"
+},
+{
+    "name": "bvijju",
+    "id": "3"
+}
+]
+output application/json
+---
+//(a map upper($.name))   //to get the upper case names of var a(try it)
+
+
+flatten((a map upper($.name)) + (b map upper($.name)))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

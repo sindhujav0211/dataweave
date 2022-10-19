@@ -30,6 +30,16 @@ attributes.method]]></ee:set-variable>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="3b9a0bf6-e799-4ac2-adc4-c9234f179cc1" message="#[vars.method]"/>
 	</flow>
+	<flow name="dataweaveFlow1" doc:id="f6af57ad-4dd7-4cca-9f10-ffc797d8fbdb" >
+		<ee:transform doc:name="I love sindhu" doc:id="e798f15a-1319-4eaf-b767-f3ced7e70ca9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"I love chintu"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 	<flow name="dataweaveFlow-functions" doc:id="6c114c39-973a-4e90-9de1-cec5b6f76b31" >
 		<ee:transform doc:name="map(array)" doc:id="0fb4d79e-8854-4ccb-b931-c8e3dcd038da" >
 			<ee:message >
